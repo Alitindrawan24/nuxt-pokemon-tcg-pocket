@@ -1,0 +1,22 @@
+{
+  // https://nuxt.com/docs/guide/concepts/typescript
+  "extends": "./.nuxt/tsconfig.json",
+   "compilerOptions": {
+        "target": "ES2018",
+        "module": "ESNext",
+        "moduleResolution": "Node",
+        "lib": ["ESNext", "ESNext.AsyncIterable", "DOM"],
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "allowJs": true,
+        "sourceMap": true,
+        "strict": true,
+        "noEmit": true,
+        "baseUrl": ".",
+        "experimentalDecorators": true,
+        "paths": {   // This overwrites every "paths" mapping from ./.nuxt/tsconfig.json!
+            "~/*": ["./*"],
+            "@/*": ["./*"],
+        },
+    },
+}
