@@ -3,6 +3,7 @@ export default defineNuxtConfig({
   compatibilityDate: '2024-11-01',
   app: {
     head: {
+      viewport: 'width=device-width, initial-scale=1, maximum-scale=1',
       title: 'Pokemon TCG Pocket',
       htmlAttrs: {
         lang: 'en',
