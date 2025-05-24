@@ -1,9 +1,13 @@
 <template>
     <NuxtLoadingIndicator :color="'#51A3FF'" :throttle="0" />
-    <UApp>
-        <!-- <NavBar  /> -->
-        <NuxtPage />
-    </UApp>
+    <div class="flex flex-col min-h-screen">
+        <main class="flex-grow">
+            <NuxtPage />
+        </main>
+        <div class="mt-auto">
+            <TheFooter />
+        </div>
+    </div>
 </template>
 
 <style>
