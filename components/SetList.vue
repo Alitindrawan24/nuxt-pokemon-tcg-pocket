@@ -1,14 +1,7 @@
 <template>
-    <div class="w-full">
-        <UTable 
-            :loading="isLoading" 
-            loading-color="secondary" 
-            loading-animation="carousel" 
-            :data="sets"
-            :columns="columns" 
-            @select="onSelect" 
-
-        />
+    <div class="w-full lg:w-3/4 mx-auto px-0 md:px-2">
+        <UTable :loading="isLoading" v-model:column-visibility="columnVisibility" loading-color="secondary"
+            loading-animation="carousel" :data="sets" :columns="columns" @select="onSelect" />
     </div>
 </template>
 
@@ -30,14 +23,20 @@ const url = config.public.apiHost
 const isLoading = ref(true)
 const router = useRouter()
 
+const columnVisibility = ref({
+    image: false,
+    code: false,
+})
+
 const columns: TableColumn<Set>[] = [
     {
         accessorKey: 'name',
         header: 'Name',
         cell: ({ row }) => {
             const image = url + row.getValue("image");
+            const name = row.getValue("name") + ` (${row.getValue("code")})`;
 
-            return h('span', { class: 'inline-flex items-center gap-2' }, [h('img', { src: image, class: '' }), h('span', row.getValue("name")), h('span', { class: 'text-xs opacity-75' }, row.getValue("code"))]);
+            return h('span', { class: 'inline-flex items-center gap-2' }, [h('img', { src: image, class: 'img w-12 sm:w-16' }), h('span', { class: 'whitespace-normal' }, name)]);
         }
     },
     {
@@ -52,14 +51,17 @@ const columns: TableColumn<Set>[] = [
 
             return date.toLocaleString('en-US', {
                 day: 'numeric',
-                month: 'long',
+                month: 'short',
                 year: 'numeric'
             })
         }
     },
     {
         accessorKey: 'count',
-        header: 'Cards'
+        header: 'Cards',
+        cell: ({ row }) => {
+            return h('p', { class: 'text-right' }, row.getValue("count"));
+        }
     },
     {
         accessorKey: 'image',
