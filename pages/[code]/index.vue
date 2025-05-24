@@ -7,15 +7,13 @@
 
             <div>
                 <div class="flex flex-wrap mx-2 mb-4">
-                    <div v-for="card in cards" :key="card._id" class="w-1/3 md:w-1/4 lg:w-1/5 px-2 mb-4">
-                        <div class="flex items-center justify-center">
-                            <img :src="url + card.image" :alt="card.name">
-                        </div>
+                    <div v-for="card in cards" :key="card._id" class="w-1/2 md:w-1/4 lg:w-1/6 px-2 mb-4">
+                        <TcgCard :src="url + card.image" :alt="card.name" />
                     </div>
                 </div>
                 
                 <div v-if="isLoading" class="w-24 justify-self-center my-12">
-                    <NuxtImg src="/loading.svg" alt="loading" placeholder loading="lazy" />
+                    <img src="/loading.svg" alt="loading" placeholder loading="lazy">
                 </div>
             </div>
         </div>
