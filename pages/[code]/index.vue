@@ -1,8 +1,8 @@
 <template>
     <div>
         <div class="container justify-self-center">
-            <div class="bg-black-400 shadow-md p-4 mb-4 text-center">
-                <h1 class="text-3xl font-bold text-white">{{ set?.name }} ({{ set?.code }}) Card List</h1>
+            <div class="p-4 mb-4 text-center">
+                <h1 class="text-3xl font-bold text-grey:900 dark:text-white">{{ set?.name }} ({{ set?.code }}) Card List</h1>
             </div>
 
             <div>

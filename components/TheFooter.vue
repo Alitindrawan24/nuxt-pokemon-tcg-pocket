@@ -1,7 +1,7 @@
 <template>
     <footer class="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800">
         <UContainer class="py-6">
-            <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex flex-row justify-between items-center gap-4">
                 <!-- Copyright -->
                 <div class="text-sm text-gray-500 dark:text-gray-400">
                     &copy; {{ new Date().getFullYear() }} Alt24
