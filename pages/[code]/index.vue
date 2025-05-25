@@ -2,7 +2,9 @@
     <div>
         <div class="container justify-self-center">
             <div class="p-4 mb-4 text-center">
-                <h1 class="text-3xl font-bold text-grey:900 dark:text-white">{{ set?.name }} ({{ set?.code }}) Card List</h1>
+                <USkeleton v-if="!titleShow" class="h-6 w-128 mx-auto" />
+                <h1 v-if="titleShow" class="text-3xl font-bold text-grey:900 dark:text-white">{{ set?.name }} ({{ set?.code }}) Card List
+                </h1>
             </div>
 
             <div>
@@ -11,9 +13,9 @@
                         <TcgCard :src="url + card.image" :alt="card.name" />
                     </div>
                 </div>
-                
+
                 <div v-if="isLoading" class="w-24 justify-self-center my-12">
-                    <img src="/loading.svg" alt="loading" placeholder loading="lazy">
+                    <img src="/loading.svg" alt="loading" loading="lazy">
                 </div>
             </div>
         </div>
@@ -72,12 +74,13 @@ const config = useRuntimeConfig()
 const url = config.public.apiHost
 const limit = ref(300)
 const skip = ref(0)
+const titleShow = ref(false)
 const isLoading = ref(false)
 const canLoadMore = ref(true)
 
 const loadMore = async () => {
     isLoading.value = true
-    
+
     const data = await fetchCardData()
 
     canLoadMore.value = data.length > 0
@@ -101,6 +104,8 @@ const fetchSetData = async () => {
         "method": "GET",
         "path": `/api/sets/${route.params.code}`
     })
+
+    titleShow.value = true
 
     return setResponse.data
 }

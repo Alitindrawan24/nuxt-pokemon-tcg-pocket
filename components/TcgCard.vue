@@ -22,9 +22,10 @@ const props = defineProps({
 
 <template>
     <div class="flex flex-col [perspective:800px]">
-        <div @mouseleave="boundingRect = null" @mouseenter="setBoundingRect" @mousemove="handleMouseMove" ref="cardEl"
-            class="cursor-pointer group relative transition-transform ease-out hover:[transform:rotateX(var(--x-rotation))_rotateY(var(--y-rotation))_scale(1.1)]">
-            <NuxtImg class="" :src="props.src" :alt="props.alt" />
+        <div ref="cardEl"
+            class="cursor-pointer group relative transition-transform ease-out hover:[transform:rotateX(var(--x-rotation))_rotateY(var(--y-rotation))_scale(1.1)]"
+            @mouseleave="boundingRect = null" @mouseenter="setBoundingRect" @mousemove="handleMouseMove">
+            <NuxtImg class="" :src="props.src" :alt="props.alt" placeholder />
         </div>
     </div>
 </template>
