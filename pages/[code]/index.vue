@@ -2,9 +2,18 @@
     <div>
         <div class="container justify-self-center">
             <div class="p-4 mb-4 text-center">
-                <USkeleton v-if="!titleShow" class="h-6 w-64 md:w-128 mx-auto" />
-                <h1 v-if="titleShow" class="text-3xl font-bold text-grey:900 dark:text-white">{{ set?.name }} ({{ set?.code }}) Card List
-                </h1>
+                <UContainer class="py-6 bg-gray-100 dark:bg-gray-800 border-t border-gray-400 dark:border-gray-600">
+                    <USkeleton v-if="!titleShow" class="h-6 w-64 md:w-128 mx-auto" />
+                    <div v-if="titleShow" class="flex flex-row gap-5">
+                        <div class="self-center">
+                            <NuxtImg class="w-16" :src="url + set?.image" />
+                        </div>
+                        <div class="flex-column text-left">
+                            <h1 class="text-lg md:text-xl font-bold text-grey:900 dark:text-white">{{ set?.name }} ({{ set?.code }})</h1>
+                            <h1 class="text-sm md:text-lg font-light text-grey:900 dark:text-white">{{ toDateFormatted(set?.date ?? "") }} • {{ set?.count }} Cards</h1>
+                        </div>
+                    </div>
+                </UContainer>
             </div>
 
             <div>
@@ -25,6 +34,8 @@
 <script setup lang="ts">
 
 const route = useRoute()
+const config = useRuntimeConfig()
+const url = config.public.apiHost
 const cards = ref<ICard[]>([]);
 const set = ref<ISet>();
 const limit = ref(300)
@@ -63,6 +74,20 @@ const fetchSetData = async () => {
     titleShow.value = true
 
     return setResponse.data
+}
+
+const toDateFormatted = (date: string) => {
+    const dateFormat = new Date(date);
+
+    if (isNaN(dateFormat.getTime())) {
+        return "";
+    }
+
+    return dateFormat.toLocaleString('en-US', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric'
+    })
 }
 
 const handleScroll = () => {
