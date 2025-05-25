@@ -10,7 +10,7 @@
             <div>
                 <div class="flex flex-wrap mx-2 mb-4">
                     <div v-for="card in cards" :key="card._id" class="w-1/2 md:w-1/4 lg:w-1/6 px-2 mb-4">
-                        <TcgCard :src="url + card.image" :alt="card.name" />
+                        <TcgCard :is-linkable="false" :card="card" />
                     </div>
                 </div>
 
@@ -23,55 +23,10 @@
 </template>
 
 <script setup lang="ts">
-interface Card {
-    _id: string;
-    set: string;
-    number: number;
-    code: string;
-    name: string;
-    evolvesFrom: string;
-    pokemonType: string;
-    hp?: number;
-    cardType: string;
-    cardVariant: string;
-    artist: string;
-    ability?: CardAbility;
-    description?: string;
-    flavor: string;
-    attack_1?: CardAttack;
-    attack_2?: CardAttack;
-    weakness: string;
-    retreat: number;
-    rarity: string;
-    image: string;
-}
-
-interface CardAbility {
-    name: string;
-    effect: string;
-}
-
-interface CardAttack {
-    energy: string[];
-    name: string;
-    effect?: string;
-    power?: number;
-}
-
-interface Set {
-    _id: string
-    code: string
-    name: string
-    image: string
-    date: string
-    count: number
-}
 
 const route = useRoute()
-const cards = ref<Card[]>([]);
-const set = ref<Set>();
-const config = useRuntimeConfig()
-const url = config.public.apiHost
+const cards = ref<ICard[]>([]);
+const set = ref<ISet>();
 const limit = ref(300)
 const skip = ref(0)
 const titleShow = ref(false)
@@ -89,7 +44,7 @@ const loadMore = async () => {
 }
 
 const fetchCardData = async () => {
-    const cardResponse = await useApi<Card[]>({
+    const cardResponse = await useApi<ICard[]>({
         "method": "GET",
         "path": `/api/cards?set=${route.params.code}&limit=${limit.value}&skip=${skip.value}`
     })
@@ -100,7 +55,7 @@ const fetchCardData = async () => {
 }
 
 const fetchSetData = async () => {
-    const setResponse = await useApi<Set>({
+    const setResponse = await useApi<ISet>({
         "method": "GET",
         "path": `/api/sets/${route.params.code}`
     })

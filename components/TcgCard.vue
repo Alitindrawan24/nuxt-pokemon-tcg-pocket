@@ -1,48 +1,27 @@
-<!-- <template>
-    <div class="flex items-center justify-center cursor-pointer perspective-[1000px]">
-        <NuxtImg class="transition-transform duration-500 transform-style-preserve-3d hover:rotate-x-15 hover:rotate-y-15 hover:translate-z-20" :src="props.src" :alt="props.alt" />
-    </div>
-</template>
-
-<script lang="ts" setup>
-const props = defineProps({
-    src: {
-        type: String,
-        required: true
-    },
-    alt: {
-        type: String,
-        required: true
-    }
-});
-
-</script>
-
-<style></style> -->
-
 <template>
     <div class="flex flex-col [perspective:800px]">
         <div ref="cardEl"
             class="cursor-pointer group relative transition-transform ease-out hover:[transform:rotateX(var(--x-rotation))_rotateY(var(--y-rotation))_scale(1.1)]"
             @mouseleave="boundingRect = null" @mouseenter="setBoundingRect" @mousemove="handleMouseMove">
-            <NuxtImg class="" :src="props.src" :alt="props.alt" placeholder />
+            <NuxtLink :to="link">
+                <NuxtImg :src="url + props.card.image" :alt="props.card.name" placeholder />
+            </NuxtLink>
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
 
-const props = defineProps({
-    src: {
-        type: String,
-        required: true
-    },
-    alt: {
-        type: String,
-        required: true
-    }
-});
+const props = withDefaults(defineProps<{
+    card: ICard
+    isLinkable?: boolean
+}>(), {
+    isLinkable: true
+})
 
+const config = useRuntimeConfig()
+const url = config.public.apiHost
+const link = props.isLinkable ? `${props.card.set}/${props.card.number}` : undefined
 const cardEl = ref<HTMLElement | null>(null)
 const boundingRect = ref<DOMRect | null>(null)
 

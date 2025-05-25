@@ -1,23 +1,16 @@
 <template>
     <div class="w-full lg:w-3/4 mx-auto px-0 md:px-2">
-        <UTable :loading="isLoading" v-model:column-visibility="columnVisibility" loading-color="secondary"
-            loading-animation="carousel" :data="sets" :columns="columns" @select="onSelect" />
+        <ClientOnly>
+            <UTable :loading="isLoading" v-model:column-visibility="columnVisibility" loading-color="secondary"
+                loading-animation="carousel" :data="sets" :columns="columns" @select="onSelect" />
+        </ClientOnly>
     </div>
 </template>
 
 <script lang="ts" setup>
 import type { TableColumn, TableRow } from '@nuxt/ui/.'
 
-interface Set {
-    _id: string
-    code: string
-    name: string
-    image: string
-    date: string
-    count: number
-}
-
-const sets = ref<Set[]>([]);
+const sets = ref<ISet[]>([]);
 const config = useRuntimeConfig()
 const url = config.public.apiHost
 const isLoading = ref(true)
@@ -28,7 +21,7 @@ const columnVisibility = ref({
     code: false,
 })
 
-const columns: TableColumn<Set>[] = [
+const columns: TableColumn<ISet>[] = [
     {
         accessorKey: 'name',
         header: 'Name',
@@ -76,7 +69,7 @@ const columns: TableColumn<Set>[] = [
 ]
 
 const fetchData = async () => {
-    const setResponse = await useApi<Set[]>({
+    const setResponse = await useApi<ISet[]>({
         "method": "GET",
         "path": "/api/sets"
     })
@@ -89,7 +82,7 @@ onMounted(async () => {
     sets.value = await fetchData();
 })
 
-function onSelect(row: TableRow<Set>) {
+function onSelect(row: TableRow<ISet>) {
     const code = row.getValue('code')
     router.push(`/${code}`)
 }
