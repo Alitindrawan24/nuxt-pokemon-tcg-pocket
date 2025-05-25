@@ -2,7 +2,7 @@
     <div>
         <div class="container justify-self-center">
             <div class="p-4 mb-4 text-center">
-                <USkeleton v-if="!titleShow" class="h-6 w-128 mx-auto" />
+                <USkeleton v-if="!titleShow" class="h-6 w-64 md:w-128 mx-auto" />
                 <h1 v-if="titleShow" class="text-3xl font-bold text-grey:900 dark:text-white">{{ set?.name }} ({{ set?.code }}) Card List
                 </h1>
             </div>
