@@ -19,7 +19,7 @@
             <div>
                 <div class="flex flex-wrap mx-2 mb-4">
                     <div v-for="card in cards" :key="card._id" class="w-1/2 md:w-1/4 lg:w-1/6 px-2 mb-4">
-                        <TcgCard :is-linkable="false" :card="card" />
+                        <TcgCard :is-linkable="true" :card="card" />
                     </div>
                 </div>
 
