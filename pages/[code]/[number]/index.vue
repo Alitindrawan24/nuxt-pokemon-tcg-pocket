@@ -22,7 +22,7 @@
                             <div class="flex gap-1 mt-1">
                                 <NuxtImg v-if="card?.pokemonType"
                                     :src="'https://static.dotgg.gg/pokemon/icons/' + card?.pokemonType.toLowerCase() + '.png'"
-                                    :title="card?.pokemonType" class="w-5 h-5" />
+                                    :title="card?.pokemonType" class="w-8 h-8" />
                             </div>
                         </div>
                         <p class="text-lg text-gray-600 dark:text-gray-400">
