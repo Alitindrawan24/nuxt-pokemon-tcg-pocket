@@ -19,9 +19,11 @@
                             <h1 class="text-4xl font-bold text-gray-900 dark:text-white">
                                 {{ card?.name }}
                             </h1>
-                            <UBadge v-if="card?.pokemonType" color="secondary" variant="soft">
-                                {{ card?.pokemonType }}
-                            </UBadge>
+                            <div class="flex gap-1 mt-1">
+                                <NuxtImg v-if="card?.pokemonType"
+                                    :src="'https://static.dotgg.gg/pokemon/icons/' + card?.pokemonType.toLowerCase() + '.png'"
+                                    :title="card?.pokemonType" class="w-5 h-5" />
+                            </div>
                         </div>
                         <p class="text-lg text-gray-600 dark:text-gray-400">
                             {{ card?.set }} • #{{ card?.number }}
@@ -29,7 +31,7 @@
                     </div>
 
                     <!-- Card Pokemon Stats -->
-                    <UCard v-if="card?.cardType == 'pokemon'">
+                    <UCard v-if="card?.cardType == 'Pokémon'">
                         <template #header>
                             <h2 class="text-xl font-semibold">Card Details</h2>
                         </template>
@@ -42,16 +44,22 @@
                             <div>
                                 <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Retreat Cost</p>
                                 <div class="flex gap-1 mt-1">
-                                    <UIcon v-for="n in card?.retreat" :key="n" name="i-heroicons-star-solid"
-                                        class="w-5 h-5 text-yellow-400" />
+                                    <NuxtImg v-for="n in card?.retreat" :key="n"
+                                        src="https://static.dotgg.gg/pokemon/icons/colorless.png" title="Colorless"
+                                        class="w-5 h-5" />
                                 </div>
                             </div>
                             <div>
                                 <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Weakness</p>
-                                <UBadge color="secondary" v-if="card?.weakness" variant="soft">
-                                    {{ card.weakness }}
-                                </UBadge>
-                                <span v-else class="text-gray-400">None</span>
+                                <div v-if="card?.weakness" class="flex gap-1 mt-1">
+                                    <div v-if="card.weakness != 'none'" class="flex flex-column">
+                                        <NuxtImg
+                                            :src="'https://static.dotgg.gg/pokemon/icons/' + card?.weakness.toLowerCase() + '.png'"
+                                            :title="card?.weakness" class="w-5 h-5" />
+                                        <span class="text-gray-500 text-sm dark:text-gray-200 ml-1">+20</span>
+                                    </div>
+                                    <span v-else class="text-gray-400">-</span>
+                                </div>
                             </div>
                         </div>
                     </UCard>
@@ -78,7 +86,8 @@
                         <div class="space-y-4">
                             <div class="border-l-4 border-blue-500 pl-4">
                                 <h3 class="font-semibold text-lg">{{ card?.ability.name }}</h3>
-                                <p class="text-gray-600 dark:text-gray-400 mt-1">{{ card?.ability.effect }}</p>
+                                <p class="text-gray-600 dark:text-gray-400 mt-1"
+                                    v-html="parseEffectText(card?.ability.effect)"></p>
                             </div>
                         </div>
                     </UCard>
@@ -97,16 +106,17 @@
                                 </div>
 
                                 <div class="flex gap-1 mb-2">
-                                    <UBadge color="secondary" v-for="(energy, index) in card?.attack_1.energy" :key="index" variant="soft" size="sm">
-                                        {{ energy }}
-                                    </UBadge>
+                                    <NuxtImg v-for="(energy, index) in card?.attack_1.energy" :key="index"
+                                        :src="'https://static.dotgg.gg/pokemon/icons/' + mappingEnergy(energy) + '.png'"
+                                        :title="mappingEnergy(energy)" class="w-5 h-5" />
                                 </div>
 
-                                <p class="text-gray-600 dark:text-gray-400">{{ card?.attack_1.effect }}</p>
+                                <p class="text-gray-600 dark:text-gray-400"
+                                    v-html="parseEffectText(card?.attack_1.effect)"></p>
                             </div>
                         </div>
-                        
-                        <div  v-if="card?.attack_2" class="space-y-6 mt-5">
+
+                        <div v-if="card?.attack_2" class="space-y-6 mt-5">
                             <div class="border border-gray-500 rounded-lg p-4 bg-gray-50 dark:bg-gray-800">
                                 <div class="flex justify-between items-start mb-2">
                                     <h3 class="font-semibold text-lg">{{ card?.attack_2.name }}</h3>
@@ -114,12 +124,13 @@
                                 </div>
 
                                 <div class="flex gap-1 mb-2">
-                                    <UBadge color="secondary" v-for="(energy, index) in card?.attack_2.energy" :key="index" variant="soft" size="sm">
-                                        {{ energy }}
-                                    </UBadge>
+                                    <NuxtImg v-for="(energy, index) in card?.attack_2.energy" :key="index"
+                                        :src="'https://static.dotgg.gg/pokemon/icons/' + mappingEnergy(energy) + '.png'"
+                                        :title="mappingEnergy(energy)" class="w-5 h-5" />
                                 </div>
 
-                                <p class="text-gray-600 dark:text-gray-400">{{ card?.attack_2.effect }}</p>
+                                <p class="text-gray-600 dark:text-gray-400"
+                                    v-html="parseEffectText(card?.attack_2.effect)"></p>
                             </div>
                         </div>
                     </UCard>
@@ -148,6 +159,8 @@
 </template>
 
 <script setup lang="ts">
+import DOMPurify from 'dompurify';
+
 const route = useRoute()
 const set = ref<ISet>();
 const card = ref<ICard>();
@@ -155,6 +168,20 @@ const isLoading = ref(true)
 
 const config = useRuntimeConfig()
 const url = config.public.apiHost
+
+type EnergyType = 'W' | 'L' | 'F' | 'P' | 'M' | 'D' | 'C' | 'R' | 'G';
+
+const energyMap: Record<EnergyType, string> = {
+    'W': 'water',
+    'L': 'lightning',
+    'R': 'fire',
+    'G': 'grass',
+    'F': 'fighting',
+    'P': 'psychic',
+    'M': 'metal',
+    'D': 'darkness',
+    'C': 'colorless'
+};
 
 const fetchCardData = async () => {
     const cardResponse = await useApi<ICard>({
@@ -174,6 +201,28 @@ const fetchSetData = async () => {
 
     return setResponse.data
 }
+
+const mappingEnergy = (energy: EnergyType) => {
+    return energyMap[energy] || energy.toLowerCase();
+}
+
+const parseEffectText = (text: string): string => {
+    if (!text) return '';
+
+    const energyTypes: EnergyType[] = ['W', 'L', 'F', 'P', 'M', 'D', 'C', 'R', 'G'];
+    let parsedText = text;
+
+    energyTypes.forEach((type) => {
+        const regex = new RegExp(`\\[${type}\\]`, 'g');
+        parsedText = parsedText.replace(
+            regex,
+            `<img src="https://static.dotgg.gg/pokemon/icons/${energyMap[type]}.png" alt="${type}" title="${type}" class="inline w-5 h-5" />`
+        );
+    });
+
+    return DOMPurify.sanitize(parsedText);
+};
+
 
 
 onMounted(async () => {
