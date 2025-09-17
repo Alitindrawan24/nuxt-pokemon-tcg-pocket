@@ -1,6 +1,7 @@
 <template>
     <NuxtLoadingIndicator :color="'#51A3FF'" :throttle="0" />
     <div class="flex flex-col min-h-screen">
+        <TheNavbar />
         <main class="flex-grow">
             <NuxtPage />
         </main>

@@ -26,10 +26,17 @@ const columns: TableColumn<ISet>[] = [
         accessorKey: 'name',
         header: 'Name',
         cell: ({ row }) => {
-            const image = url + row.getValue("image");
-            const name = row.getValue("name") + ` (${row.getValue("code")})`;
+            const raw = row.getValue('image') as string | string[] | undefined
+            let src = Array.isArray(raw) ? raw[0] : raw || ''
+            if (src && !/^https?:/i.test(src)) {
+                src = url + src
+            }
+            const name = row.getValue('name') + ` (${row.getValue('code')})`
 
-            return h('span', { class: 'inline-flex items-center gap-2' }, [h('img', { src: image, class: 'img w-12 sm:w-16' }), h('span', { class: 'whitespace-normal' }, name)]);
+            return h('span', { class: 'inline-flex items-center gap-2' }, [
+                h('img', { src, class: 'img w-12 sm:w-16' }),
+                h('span', { class: 'whitespace-normal' }, name)
+            ])
         }
     },
     {
@@ -84,7 +91,7 @@ onMounted(async () => {
 
 function onSelect(row: TableRow<ISet>) {
     const code = row.getValue('code')
-    router.push(`/${code}`)
+    router.push(`sets/${code}`)
 }
 </script>
 

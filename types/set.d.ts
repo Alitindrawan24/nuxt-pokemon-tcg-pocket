@@ -2,7 +2,7 @@ declare interface ISet {
     _id: string
     code: string
     name: string
-    image: string
+    image: string | string[]
     date: string
     count: number
 }

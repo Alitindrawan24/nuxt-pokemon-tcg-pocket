@@ -4,7 +4,8 @@
             <div class="flex flex-row justify-between items-center gap-4">
                 <!-- Copyright -->
                 <div class="text-sm text-gray-500 dark:text-gray-400">
-                    &copy; {{ new Date().getFullYear() }} @Alt24
+                    <p class="text-sm mt-2">Pokémon TCG Pocket is a fan-made project and is not affiliated with The Pokémon Company.</p>
+                    &copy;{{ new Date().getFullYear() }} @Alt24
                 </div>
 
                 <!-- External links -->

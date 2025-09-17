@@ -6,7 +6,7 @@
                     <USkeleton v-if="!titleShow" class="h-6 w-64 md:w-128 mx-auto" />
                     <div v-if="titleShow" class="flex flex-row gap-5">
                         <div class="self-center">
-                            <NuxtImg class="w-16" :src="url + set?.image" />
+                            <NuxtImg class="w-16" :src="setImageSrc" />
                         </div>
                         <div class="flex-column text-left">
                             <h1 class="text-lg md:text-xl font-bold text-grey:900 dark:text-white">{{ set?.name }} ({{ set?.code }})</h1>
@@ -113,6 +113,13 @@ onBeforeUnmount(() => {
 onMounted(async () => {
     cards.value = await fetchCardData();
     set.value = await fetchSetData();
+})
+
+const setImageSrc = computed(() => {
+    const img = set.value?.image
+    const raw = Array.isArray(img) ? img[0] : img
+    if (!raw) return ''
+    return /^https?:/i.test(raw) ? raw : (url + raw)
 })
 
 </script>
