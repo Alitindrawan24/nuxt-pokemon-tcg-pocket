@@ -6,7 +6,7 @@
             <section class="pt-24 pb-12 bg-gradient-to-b from-gray-50 to-white dark:from-gray-800 dark:to-gray-900">
                 <UContainer>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                        <div>
+                        <div class="order-2 md:order-1">
                             <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight">
                                 The Pokémon TCG, reimagined for mobile
                             </h1>
@@ -23,7 +23,7 @@
                                     to="https://apps.apple.com/app/id6479970832" target="_blank" />
                             </div>
                         </div>
-                        <div class="relative">
+                        <div class="relative order-1 md:order-2">
                             <div class="aspect-[4/3] rounded-xl overflow-hidden flex items-center justify-center">
                                 <img src="@/assets/images/tcgpocket-logo.webp" alt="Pokémon TCG Pocket Logo" class="w-3/4 h-auto object-contain" />
                             </div>

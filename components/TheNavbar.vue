@@ -10,6 +10,7 @@
         <div class="hidden md:block">
           <div class="ml-10 flex items-center space-x-2">
             <NuxtLink to="/sets" class="px-3 py-2 rounded-md text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">Sets</NuxtLink>
+            <NuxtLink to="/builder" class="px-3 py-2 rounded-md text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">Deck Builder</NuxtLink>
           </div>
         </div>
         <div class="md:hidden">
@@ -26,6 +27,7 @@
     <div v-if="isMobileMenuOpen" class="md:hidden border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
       <div class="px-4 py-2 space-y-1">
         <NuxtLink to="/sets" @click="isMobileMenuOpen = false" class="block px-3 py-2 rounded-md text-base font-semibold text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">Sets</NuxtLink>
+        <NuxtLink to="/builder" @click="isMobileMenuOpen = false" class="block px-3 py-2 rounded-md text-base font-semibold text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">Deck Builder</NuxtLink>
       </div>
     </div>
   </header>
@@ -36,4 +38,3 @@ const isMobileMenuOpen = ref(false)
 </script>
 
 <style scoped></style>
-
