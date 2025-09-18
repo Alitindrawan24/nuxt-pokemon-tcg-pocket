@@ -152,7 +152,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
-import { debounce } from 'lodash'
+import debounce from 'lodash/debounce.js'
 
 const config = useRuntimeConfig()
 const url = config.public.apiHost
