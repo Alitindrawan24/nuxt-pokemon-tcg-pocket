@@ -165,26 +165,7 @@ const config = useRuntimeConfig()
 const apiBase = config.public.apiHost
 
 const sets = ref<ISet[]>([])
-const exampleSets = ref<ISet[]>([
-    {
-        _id: 'ex1', code: 'A4a', name: 'Secluded Springs',
-        image: 'https://assets.pokemon-zone.com/game-assets/UI/Textures/System/Pack/PACK_ICON_AN010_0010_00_000.webp',
-        date: 'Aug 28, 2025', count: 105
-    },
-    {
-        _id: 'ex2', code: 'A4', name: 'Wisdom of Sea and Sky',
-        image: [
-            'https://assets.pokemon-zone.com/game-assets/UI/Textures/System/Pack/PACK_ICON_AN009_0010_00_000.webp',
-            'https://assets.pokemon-zone.com/game-assets/UI/Textures/System/Pack/PACK_ICON_AN009_0020_00_000.webp'
-        ],
-        date: 'Jul 30, 2025', count: 241
-    },
-    {
-        _id: 'ex3', code: 'A3b', name: 'Eevee Grove',
-        image: 'https://assets.pokemon-zone.com/game-assets/UI/Textures/System/Pack/PACK_ICON_AN008_0010_00_000.webp',
-        date: 'Jun 26, 2025', count: 107
-    }
-])
+const exampleSets = ref<ISet[]>([])
 const latestSets = computed(() => {
     const pool = (sets.value && sets.value.length) ? sets.value : exampleSets.value
     return [...pool]
