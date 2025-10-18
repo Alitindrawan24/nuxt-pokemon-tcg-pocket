@@ -26,8 +26,9 @@ export default defineNuxtConfig({
     '@nuxt/eslint'
   ],
   runtimeConfig: {
-        public: {
-            apiHost: ''
-        }
+    public: {
+      apiHost: '',
+      googleAdsClient: ''
     }
+  }
 })
