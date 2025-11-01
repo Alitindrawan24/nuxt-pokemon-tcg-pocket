@@ -1,85 +1,86 @@
 <template>
     <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <div v-if="card" class="container mx-auto px-4 py-8">
+        <Transition name="page-switch" mode="out-in">
+            <div v-if="card" :key="card?.number" class="container mx-auto px-4 py-8">
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:items-start">
-                <!-- Card Image Section -->
-                <div class="flex items-start justify-center gap-4 lg:gap-6">
-                    <button type="button" aria-label="Previous card" @click="goToPrevious"
-                        :disabled="isLoading || !hasPrevious"
-                        class="inline-flex h-10 w-10 items-center self-center justify-center rounded-full border border-gray-300 bg-white/80 text-gray-600 transition-transform transition-colors hover:bg-gray-100 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800/70 dark:text-gray-200 dark:hover:bg-gray-700 dark:active:bg-gray-700/80 cursor-pointer">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">
-                            <path d="M15 6l-6 6 6 6" />
-                        </svg>
-                    </button>
-                    <div class="card-image-wrapper">
-                        <Transition name="card-switch" mode="out-in">
-                            <NuxtImg v-if="card" :key="card?.number" :src="url + card?.image" :alt="card?.name" placeholder
-                                class="card-image rounded-xl shadow-2xl hover:shadow-3xl transition-shadow duration-300" />
-                        </Transition>
-                    </div>
-                    <button type="button" aria-label="Next card" @click="goToNext" :disabled="isLoading || !hasNext"
-                        class="inline-flex h-10 w-10 items-center self-center justify-center rounded-full border border-gray-300 bg-white/80 text-gray-600 transition-transform transition-colors hover:bg-gray-100 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800/70 dark:text-gray-200 dark:hover:bg-gray-700 dark:active:bg-gray-700/80 cursor-pointer">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">
-                            <path d="M9 18l6-6-6-6" />
-                        </svg>
-                    </button>
-                </div>
-
-                <!-- Card Information Section -->
-                <div class="space-y-6">
-                    <!-- Card Header -->
-                    <div>
-                        <div class="flex items-center gap-3 mb-2">
-                            <h1 class="text-4xl font-bold text-gray-900 dark:text-white">
-                                {{ card?.name }}
-                            </h1>
-                            <div class="flex gap-1 mt-1">
-                                <NuxtImg v-if="card?.pokemonType"
-                                    :src="'https://static.dotgg.gg/pokemon/icons/' + card?.pokemonType.toLowerCase() + '.png'"
-                                    :title="card?.pokemonType" class="w-8 h-8" />
-                            </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:items-start">
+                    <!-- Card Image Section -->
+                    <div class="flex items-start justify-center gap-4 lg:gap-6">
+                        <button type="button" aria-label="Previous card" @click="goToPrevious"
+                            :disabled="isLoading || !hasPrevious"
+                            class="inline-flex h-10 w-10 items-center self-center justify-center rounded-full border border-gray-300 bg-white/80 text-gray-600 transition-transform transition-colors hover:bg-gray-100 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800/70 dark:text-gray-200 dark:hover:bg-gray-700 dark:active:bg-gray-700/80 cursor-pointer">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">
+                                <path d="M15 6l-6 6 6 6" />
+                            </svg>
+                        </button>
+                        <div class="card-image-wrapper">
+                            <Transition name="card-switch" mode="out-in">
+                                <NuxtImg v-if="card" :key="card?.number" :src="url + card?.image" :alt="card?.name" placeholder
+                                    class="card-image rounded-xl shadow-2xl hover:shadow-3xl transition-shadow duration-300" />
+                            </Transition>
                         </div>
-                        <p class="text-lg text-gray-600 dark:text-gray-400">
-                            {{ card?.set }} • #{{ card?.number }}
-                        </p>
+                        <button type="button" aria-label="Next card" @click="goToNext" :disabled="isLoading || !hasNext"
+                            class="inline-flex h-10 w-10 items-center self-center justify-center rounded-full border border-gray-300 bg-white/80 text-gray-600 transition-transform transition-colors hover:bg-gray-100 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800/70 dark:text-gray-200 dark:hover:bg-gray-700 dark:active:bg-gray-700/80 cursor-pointer">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">
+                                <path d="M9 18l6-6-6-6" />
+                            </svg>
+                        </button>
                     </div>
 
-                    <!-- Card Pokemon Stats -->
-                    <UCard v-if="card?.cardType == 'Pokémon'">
-                        <template #header>
-                            <h2 class="text-xl font-semibold">Card Details</h2>
-                        </template>
-
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">HP</p>
-                                <p class="text-2xl font-bold text-secondary">{{ card?.hp }}</p>
-                            </div>
-                            <div>
-                                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Retreat Cost</p>
+                    <!-- Card Information Section -->
+                    <div class="space-y-6">
+                        <!-- Card Header -->
+                        <div>
+                            <div class="flex items-center gap-3 mb-2">
+                                <h1 class="text-4xl font-bold text-gray-900 dark:text-white">
+                                    {{ card?.name }}
+                                </h1>
                                 <div class="flex gap-1 mt-1">
-                                    <NuxtImg v-for="n in card?.retreat" :key="n"
-                                        src="https://static.dotgg.gg/pokemon/icons/colorless.png" title="Colorless"
-                                        class="w-5 h-5" />
+                                    <NuxtImg v-if="card?.pokemonType"
+                                        :src="'https://static.dotgg.gg/pokemon/icons/' + card?.pokemonType.toLowerCase() + '.png'"
+                                        :title="card?.pokemonType" class="w-8 h-8" />
                                 </div>
                             </div>
-                            <div>
-                                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Weakness</p>
-                                <div v-if="card?.weakness" class="flex gap-1 mt-1">
-                                    <div v-if="card.weakness != 'none'" class="flex flex-column">
-                                        <NuxtImg
-                                            :src="'https://static.dotgg.gg/pokemon/icons/' + card?.weakness.toLowerCase() + '.png'"
-                                            :title="card?.weakness" class="w-5 h-5" />
-                                        <span class="text-gray-500 text-sm dark:text-gray-200 ml-1">+20</span>
-                                    </div>
-                                    <span v-else class="text-gray-400">-</span>
-                                </div>
-                            </div>
+                            <p class="text-lg text-gray-600 dark:text-gray-400">
+                                {{ card?.set }} • #{{ card?.number }}
+                            </p>
                         </div>
-                    </UCard>
+
+                        <!-- Card Pokemon Stats -->
+                        <UCard v-if="card?.cardType == 'Pokémon'">
+                            <template #header>
+                                <h2 class="text-xl font-semibold">Card Details</h2>
+                            </template>
+
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-500 dark:text-gray-400">HP</p>
+                                    <p class="text-2xl font-bold text-secondary">{{ card?.hp }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Retreat Cost</p>
+                                    <div class="flex gap-1 mt-1">
+                                        <NuxtImg v-for="n in card?.retreat" :key="n"
+                                            src="https://static.dotgg.gg/pokemon/icons/colorless.png" title="Colorless"
+                                            class="w-5 h-5" />
+                                    </div>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Weakness</p>
+                                    <div v-if="card?.weakness" class="flex gap-1 mt-1">
+                                        <div v-if="card.weakness != 'none'" class="flex flex-column">
+                                            <NuxtImg
+                                                :src="'https://static.dotgg.gg/pokemon/icons/' + card?.weakness.toLowerCase() + '.png'"
+                                                :title="card?.weakness" class="w-5 h-5" />
+                                            <span class="text-gray-500 text-sm dark:text-gray-200 ml-1">+20</span>
+                                        </div>
+                                        <span v-else class="text-gray-400">-</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </UCard>
 
                     <!-- Card Item -->
                     <UCard v-if="card?.cardType == 'Trainer'">
@@ -171,7 +172,8 @@
                     </UCard>
                 </div>
             </div>
-        </div>
+            </div>
+        </Transition>
     </div>
 </template>
 
@@ -271,7 +273,7 @@ const parseEffectText = (text: string): string => {
 const navigateToCard = (targetNumber: number) => {
     if (Number.isNaN(targetNumber) || targetNumber < 1) return
 
-    router.push(`/sets/${route.params.code}/${targetNumber}`)
+    router.replace(`/sets/${route.params.code}/${targetNumber}`)
 }
 
 const goToPrevious = () => {
@@ -345,6 +347,21 @@ onMounted(async () => {
 
 .card-switch-leave-active {
     position: absolute;
+}
+
+.page-switch-enter-active,
+.page-switch-leave-active {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.page-switch-enter-from {
+    opacity: 0;
+    transform: translateY(16px);
+}
+
+.page-switch-leave-to {
+    opacity: 0;
+    transform: translateY(-16px);
 }
 
 .shadow-3xl {
