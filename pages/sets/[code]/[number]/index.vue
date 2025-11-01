@@ -1,14 +1,31 @@
 <template>
     <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <div v-if="!isLoading" class="container mx-auto px-4 py-8">
+        <div v-if="card" class="container mx-auto px-4 py-8">
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:items-start">
                 <!-- Card Image Section -->
-                <div class="flex justify-center">
-                    <div class="relative">
-                        <NuxtImg :src="url + card?.image" :alt="card?.name" placeholder
-                            class="w-full max-w-sm rounded-lg shadow-2xl hover:shadow-3xl transition-shadow duration-300" />
+                <div class="flex items-start justify-center gap-4 lg:gap-6">
+                    <button type="button" aria-label="Previous card" @click="goToPrevious"
+                        :disabled="isLoading || !hasPrevious"
+                        class="inline-flex h-10 w-10 items-center self-center justify-center rounded-full border border-gray-300 bg-white/80 text-gray-600 transition-transform transition-colors hover:bg-gray-100 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800/70 dark:text-gray-200 dark:hover:bg-gray-700 dark:active:bg-gray-700/80 cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">
+                            <path d="M15 6l-6 6 6 6" />
+                        </svg>
+                    </button>
+                    <div class="card-image-wrapper">
+                        <Transition name="card-switch" mode="out-in">
+                            <NuxtImg v-if="card" :key="card?.number" :src="url + card?.image" :alt="card?.name" placeholder
+                                class="card-image rounded-xl shadow-2xl hover:shadow-3xl transition-shadow duration-300" />
+                        </Transition>
                     </div>
+                    <button type="button" aria-label="Next card" @click="goToNext" :disabled="isLoading || !hasNext"
+                        class="inline-flex h-10 w-10 items-center self-center justify-center rounded-full border border-gray-300 bg-white/80 text-gray-600 transition-transform transition-colors hover:bg-gray-100 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800/70 dark:text-gray-200 dark:hover:bg-gray-700 dark:active:bg-gray-700/80 cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">
+                            <path d="M9 18l6-6-6-6" />
+                        </svg>
+                    </button>
                 </div>
 
                 <!-- Card Information Section -->
@@ -162,12 +179,25 @@
 import DOMPurify from 'dompurify';
 
 const route = useRoute()
+const router = useRouter()
 const set = ref<ISet>();
-const card = ref<ICard>();
+const card = ref<ICard | null>(null);
 const isLoading = ref(true)
+let cardRequestId = 0
 
 const config = useRuntimeConfig()
 const url = config.public.apiHost
+
+const cardNumber = computed(() => {
+    const parsed = Number(route.params.number)
+    return Number.isNaN(parsed) ? 0 : parsed
+})
+
+const hasPrevious = computed(() => cardNumber.value > 1)
+const hasNext = computed(() => {
+    if (!set.value?.count) return false
+    return cardNumber.value < set.value.count
+})
 
 type EnergyType = 'W' | 'L' | 'F' | 'P' | 'M' | 'D' | 'C' | 'R' | 'G';
 
@@ -183,14 +213,29 @@ const energyMap: Record<EnergyType, string> = {
     'C': 'colorless'
 };
 
-const fetchCardData = async () => {
-    const cardResponse = await useApi<ICard>({
-        "method": "GET",
-        "path": `/api/cards/${route.params.code}/${route.params.number}`
-    })
+const fetchCardData = async (cardNumberParam?: number) => {
+    const requestId = ++cardRequestId
+    isLoading.value = true
 
-    isLoading.value = false
-    return cardResponse.data
+    try {
+        const numberToRequest = cardNumberParam ?? cardNumber.value
+        if (!numberToRequest || Number.isNaN(numberToRequest)) {
+            return
+        }
+
+        const cardResponse = await useApi<ICard>({
+            "method": "GET",
+            "path": `/api/cards/${route.params.code}/${numberToRequest}`
+        })
+
+        if (requestId === cardRequestId) {
+            card.value = cardResponse.data
+        }
+    } finally {
+        if (requestId === cardRequestId) {
+            isLoading.value = false
+        }
+    }
 }
 
 const fetchSetData = async () => {
@@ -199,7 +244,7 @@ const fetchSetData = async () => {
         "path": `/api/sets/${route.params.code}`
     })
 
-    return setResponse.data
+    set.value = setResponse.data
 }
 
 const mappingEnergy = (energy: EnergyType) => {
@@ -223,16 +268,85 @@ const parseEffectText = (text: string): string => {
     return DOMPurify.sanitize(parsedText);
 };
 
+const navigateToCard = (targetNumber: number) => {
+    if (Number.isNaN(targetNumber) || targetNumber < 1) return
+
+    router.push(`/sets/${route.params.code}/${targetNumber}`)
+}
+
+const goToPrevious = () => {
+    if (!hasPrevious.value) return
+    navigateToCard(cardNumber.value - 1)
+}
+
+const goToNext = () => {
+    if (!hasNext.value) return
+    navigateToCard(cardNumber.value + 1)
+}
+
+watch(
+    () => [route.params.code, route.params.number],
+    async ([newCode, newNumber], [oldCode, oldNumber]) => {
+        if (!newCode) return
+
+        if (newCode !== oldCode) {
+            await fetchSetData()
+        }
+
+        if (newNumber && (newNumber !== oldNumber || newCode !== oldCode)) {
+            const parsedNumber = Number(newNumber)
+            if (!Number.isNaN(parsedNumber) && parsedNumber > 0) {
+                await fetchCardData(parsedNumber)
+            }
+        }
+    }
+)
 
 
 onMounted(async () => {
-    card.value = await fetchCardData();
-    set.value = await fetchSetData();
+    await Promise.all([
+        fetchSetData(),
+        fetchCardData()
+    ])
 })
 
 </script>
 
 <style scoped>
+.card-image-wrapper {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.card-image {
+    display: block;
+    width: 20rem;
+}
+
+.card-switch-enter-active,
+.card-switch-leave-active {
+    transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.card-switch-enter-from,
+.card-switch-leave-to {
+    opacity: 0;
+}
+
+.card-switch-enter-from {
+    transform: translateX(16px);
+}
+
+.card-switch-leave-to {
+    transform: translateX(-16px);
+}
+
+.card-switch-leave-active {
+    position: absolute;
+}
+
 .shadow-3xl {
     box-shadow: 0 35px 60px -12px rgba(0, 0, 0, 0.25);
 }
