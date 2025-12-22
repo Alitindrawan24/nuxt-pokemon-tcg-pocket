@@ -34,7 +34,11 @@ const columns: TableColumn<ISet>[] = [
             const name = row.getValue('name') + ` (${row.getValue('code')})`
 
             return h('span', { class: 'inline-flex items-center gap-2' }, [
-                h('img', { src, class: 'img w-12 sm:w-16' }),
+                h('img', {
+                    src, class: 'img w-12 sm:w-16', 
+                    crossorigin: 'anonymous',
+                    referrerpolicy: 'no-referrer'
+                }),
                 h('span', { class: 'whitespace-normal' }, name)
             ])
         }

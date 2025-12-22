@@ -16,7 +16,7 @@ export default defineNuxtConfig({
   devServer: {
     port: 3030
   },
-  devtools: { enabled: true },
+  devtools: { enabled: false },
     css: ['~/assets/css/main.css'],
   modules: [
     '@nuxt/image',
