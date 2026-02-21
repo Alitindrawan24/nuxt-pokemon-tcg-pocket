@@ -32,9 +32,9 @@
                                     {{ findCardNameInDeck(card) }}
                                 </div>
                                 <div class="absolute inset-0 hidden lg:flex items-center justify-center gap-1 lg:gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <UButton @click.stop="addCard(card)" size="xs" variant="solid" icon="i-heroicons-plus-20-solid" class="shadow-lg !bg-blue-900 hover:!bg-blue-950 !text-white lg:!w-10 lg:!h-10" />
-                                    <UButton @click.stop="removeCard(card)" size="xs" variant="solid" icon="i-heroicons-minus-20-solid" class="shadow-lg !bg-blue-900 hover:!bg-blue-950 !text-white lg:!w-10 lg:!h-10" />
-                                    <UButton @click.stop="openCardModal(card)" size="xs" variant="solid" icon="i-heroicons-eye-20-solid" class="shadow-lg !bg-blue-900 hover:!bg-blue-950 !text-white lg:!w-10 lg:!h-10" />
+                                    <UButton @click.stop="addCard(card)" size="xs" variant="solid" icon="i-heroicons-plus-20-solid" class="shadow-lg !bg-blue-900 hover:!bg-blue-950 !text-white !flex !items-center !justify-center lg:!w-10 lg:!h-10" />
+                                    <UButton @click.stop="removeCard(card)" size="xs" variant="solid" icon="i-heroicons-minus-20-solid" class="shadow-lg !bg-blue-900 hover:!bg-blue-950 !text-white !flex !items-center !justify-center lg:!w-10 lg:!h-10" />
+                                    <UButton @click.stop="openCardModal(card)" size="xs" variant="solid" icon="i-heroicons-eye-20-solid" class="shadow-lg !bg-blue-900 hover:!bg-blue-950 !text-white !flex !items-center !justify-center lg:!w-10 lg:!h-10" />
                                 </div>
                             </div>
                         </div>
@@ -85,9 +85,9 @@
                                         {{ item.quantity }}
                                     </div>
                                     <div class="absolute inset-0 flex items-center justify-center gap-1 lg:gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <UButton @click.stop="addCard(item.card)" size="xs" variant="solid" icon="i-heroicons-plus-20-solid" class="shadow-lg !bg-blue-900 hover:!bg-blue-950 !text-white lg:!w-10 lg:!h-10" />
-                                        <UButton @click.stop="removeCard(item.card)" size="xs" variant="solid" icon="i-heroicons-minus-20-solid" class="shadow-lg !bg-blue-900 hover:!bg-blue-950 !text-white lg:!w-10 lg:!h-10" />
-                                        <UButton @click.stop="openCardModal(item.card)" size="xs" variant="solid" icon="i-heroicons-eye-20-solid" class="shadow-lg !bg-blue-900 hover:!bg-blue-950 !text-white lg:!w-10 lg:!h-10" />
+                                        <UButton @click.stop="addCard(item.card)" size="xs" variant="solid" icon="i-heroicons-plus-20-solid" class="shadow-lg !bg-blue-900 hover:!bg-blue-950 !text-white !flex !items-center !justify-center lg:!w-10 lg:!h-10" />
+                                        <UButton @click.stop="removeCard(item.card)" size="xs" variant="solid" icon="i-heroicons-minus-20-solid" class="shadow-lg !bg-blue-900 hover:!bg-blue-950 !text-white !flex !items-center !justify-center lg:!w-10 lg:!h-10" />
+                                        <UButton @click.stop="openCardModal(item.card)" size="xs" variant="solid" icon="i-heroicons-eye-20-solid" class="shadow-lg !bg-blue-900 hover:!bg-blue-950 !text-white !flex !items-center !justify-center lg:!w-10 lg:!h-10" />
                                     </div>
                                 </div>
                             </div>
