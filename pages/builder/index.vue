@@ -16,21 +16,34 @@
                             icon="i-heroicons-magnifying-glass" size="xl" />
                     </div>
 
-                    <div class="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg h-[600px] overflow-y-auto">
+                    <div ref="scrollContainer" class="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg h-[600px] overflow-y-auto">
                         <div v-if="cards.length > 0" class="grid grid-cols-2 gap-4">
                             <!-- Card item in the search list -->
                             <div v-for="card in cards" :key="card._id" draggable="true"
-                                @dragstart="handleDragStart($event, card)" @click="openCardModal(card)"
-                                @contextmenu.prevent="addCard(card)"
-                                class="cursor-pointer active:cursor-grabbing group">
+                                @dragstart="handleDragStart($event, card)"
+                                class="cursor-grab active:cursor-grabbing group relative">
                                 <NuxtImg :src="url + card.image" :alt="card.name"
-                                    class="rounded-lg shadow-md w-full pointer-events-none"
+                                    class="rounded-lg shadow-md w-full select-none group-hover:opacity-30 transition-opacity"
+                                    draggable="false"
                                     onerror="this.onerror=null;this.src='https://placehold.co/240x336/EFEFEF/333333?text=No+Image';" />
+                                <div v-if="findCardNameInDeck(card) > 0"
+                                    class="absolute -top-2 -right-2 bg-primary-500 text-white rounded-full h-6 w-6 flex items-center justify-center text-sm font-bold shadow-lg pointer-events-none">
+                                    {{ findCardNameInDeck(card) }}
+                                </div>
+                                <div class="absolute inset-0 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <UButton @click.stop="addCard(card)" size="md" variant="solid" icon="i-heroicons-plus-20-solid" class="shadow-lg !bg-blue-900 hover:!bg-blue-950 !text-white" />
+                                    <UButton @click.stop="removeCard(card)" size="md" variant="solid" icon="i-heroicons-minus-20-solid" class="shadow-lg !bg-blue-900 hover:!bg-blue-950 !text-white" />
+                                    <UButton @click.stop="openCardModal(card)" size="md" variant="solid" icon="i-heroicons-eye-20-solid" class="shadow-lg !bg-blue-900 hover:!bg-blue-950 !text-white" />
+                                </div>
                             </div>
                         </div>
                         <div v-else class="flex items-center justify-center h-full">
                             <p class="text-gray-500">No cards found.</p>
                         </div>
+                        <div v-if="isLoading" class="flex justify-center py-4">
+                            <UIcon name="i-heroicons-arrow-path" class="animate-spin text-2xl text-primary-500" />
+                        </div>
+                        <div ref="loadMoreTrigger" class="h-4"></div>
                     </div>
                 </div>
             </div>
@@ -61,21 +74,19 @@
                         <div v-else>
                             <!-- Unified Deck Grid -->
                             <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
-                                <div v-for="item in deck" :key="item.card._id" class="relative group cursor-pointer"
-                                    @click="openCardModal(item.card)" @contextmenu.prevent="removeCard(item.card)">
+                                <div v-for="item in deck" :key="item.card._id" class="relative group">
                                     <NuxtImg :src="url + item.card.image" :alt="item.card.name"
-                                        class="rounded-lg shadow-md w-full pointer-events-none"
+                                        class="rounded-lg shadow-md w-full select-none group-hover:opacity-30 transition-opacity"
+                                        draggable="false"
                                         onerror="this.onerror=null;this.src='https://placehold.co/240x336/EFEFEF/333333?text=No+Image';" />
                                     <div
                                         class="absolute -top-2 -right-2 bg-primary-500 text-white rounded-full h-6 w-6 flex items-center justify-center text-sm font-bold shadow-lg pointer-events-none">
                                         {{ item.quantity }}
                                     </div>
-                                    <div
-                                        class="absolute bottom-0 left-0 right-0 flex justify-center p-1 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity rounded-b-lg">
-                                        <UButton @click.stop="removeCard(item.card)" size="2xs" square variant="solid"
-                                            color="red" icon="i-heroicons-minus-solid" />
-                                        <UButton @click.stop="addCard(item.card)" size="2xs" square variant="solid"
-                                            color="green" icon="i-heroicons-plus-solid" class="ml-1" />
+                                    <div class="absolute inset-0 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <UButton @click.stop="addCard(item.card)" size="md" variant="solid" icon="i-heroicons-plus-20-solid" class="shadow-lg !bg-blue-900 hover:!bg-blue-950 !text-white" />
+                                        <UButton @click.stop="removeCard(item.card)" size="md" variant="solid" icon="i-heroicons-minus-20-solid" class="shadow-lg !bg-blue-900 hover:!bg-blue-950 !text-white" />
+                                        <UButton @click.stop="openCardModal(item.card)" size="md" variant="solid" icon="i-heroicons-eye-20-solid" class="shadow-lg !bg-blue-900 hover:!bg-blue-950 !text-white" />
                                     </div>
                                 </div>
                             </div>
@@ -161,7 +172,8 @@ const limit = ref(20)
 const skip = ref(0)
 const search = ref("")
 const isLoading = ref(false)
-// const canLoadMore = ref(true)
+const scrollContainer = ref<HTMLElement | null>(null)
+const loadMoreTrigger = ref<HTMLElement | null>(null)
 
 //======================================================================
 // DATA & STATE
@@ -245,6 +257,24 @@ const totalCount = computed(() => deck.value.reduce((sum, item) => sum + item.qu
 
 onMounted(async () => {
     cards.value = await fetchCardData();
+    
+    if (loadMoreTrigger.value) {
+        const observer = new IntersectionObserver(async (entries) => {
+            if (entries[0].isIntersecting && !isLoading.value) {
+                skip.value += limit.value
+                isLoading.value = true
+                const data = await fetchCardData()
+                if (data.length > 0) {
+                    cards.value.push(...data)
+                }
+                isLoading.value = false
+            }
+        }, { root: scrollContainer.value, threshold: 0.1 })
+        
+        observer.observe(loadMoreTrigger.value)
+        
+        onBeforeUnmount(() => observer.disconnect())
+    }
 })
 
 //======================================================================
@@ -276,16 +306,17 @@ const addCard = (card: ICard) => {
         return;
     }
 
-    const index = findCardIndexInDeck(card);
-    const existingItem = deck.value[index];
-    const existingCardName = findCardNameInDeck(deck.value[index].card)
+    const existingCardName = findCardNameInDeck(card)
+    
+    if (existingCardName >= 2) {
+        alert(`Max 2 copies of ${card.name} allowed.`);
+        return;
+    }
 
-    if (index !== -1 && existingCardName > 0) {
-        if (existingCardName < 2) {
-            existingItem.quantity++;
-        } else {
-            alert(`Max 2 copies of ${card.name} allowed.`);
-        }
+    const index = findCardIndexInDeck(card);
+
+    if (index !== -1) {
+        deck.value[index].quantity++;
     } else {
         deck.value.push({ card, quantity: 1 });
     }
