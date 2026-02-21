@@ -17,7 +17,7 @@ const isLoading = ref(true)
 const router = useRouter()
 
 const columnVisibility = ref({
-    image: false,
+    image: true,
     code: false,
 })
 
@@ -30,6 +30,9 @@ const columns: TableColumn<ISet>[] = [
             let src = Array.isArray(raw) ? raw[0] : raw || ''
             if (src && !/^https?:/i.test(src)) {
                 src = url + src
+            }
+            if (!src) {
+                src = 'https://placehold.co/64x64/EFEFEF/333333?text=No+Image'
             }
             const name = row.getValue('name') + ` (${row.getValue('code')})`
 
