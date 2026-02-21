@@ -5,9 +5,9 @@
             <p class="text-lg text-gray-500 dark:text-gray-400">Search mock cards and drag them to build your deck.</p>
         </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-8">
             <!-- Left Column: Card Search -->
-            <div class="lg:col-span-1">
+            <div class="lg:col-span-1 order-2 lg:order-1">
                 <div class="space-y-4">
                     <div>
                         <label for="card-search"
@@ -16,11 +16,12 @@
                             icon="i-heroicons-magnifying-glass" size="xl" />
                     </div>
 
-                    <div ref="scrollContainer" class="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg h-[600px] overflow-y-auto">
-                        <div v-if="cards.length > 0" class="grid grid-cols-2 gap-4">
+                    <div ref="scrollContainer" class="bg-gray-100 dark:bg-gray-800 p-2 lg:p-4 rounded-lg h-[400px] lg:h-[600px] overflow-y-auto">
+                        <div v-if="cards.length > 0" class="grid grid-cols-3 sm:grid-cols-2 gap-2 lg:gap-4">
                             <!-- Card item in the search list -->
                             <div v-for="card in cards" :key="card._id" draggable="true"
                                 @dragstart="handleDragStart($event, card)"
+                                @click="addCard(card)"
                                 class="cursor-grab active:cursor-grabbing group relative">
                                 <NuxtImg :src="url + card.image" :alt="card.name"
                                     class="rounded-lg shadow-md w-full select-none group-hover:opacity-30 transition-opacity"
@@ -30,10 +31,10 @@
                                     class="absolute -top-2 -right-2 bg-primary-500 text-white rounded-full h-6 w-6 flex items-center justify-center text-sm font-bold shadow-lg pointer-events-none">
                                     {{ findCardNameInDeck(card) }}
                                 </div>
-                                <div class="absolute inset-0 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <UButton @click.stop="addCard(card)" size="md" variant="solid" icon="i-heroicons-plus-20-solid" class="shadow-lg !bg-blue-900 hover:!bg-blue-950 !text-white" />
-                                    <UButton @click.stop="removeCard(card)" size="md" variant="solid" icon="i-heroicons-minus-20-solid" class="shadow-lg !bg-blue-900 hover:!bg-blue-950 !text-white" />
-                                    <UButton @click.stop="openCardModal(card)" size="md" variant="solid" icon="i-heroicons-eye-20-solid" class="shadow-lg !bg-blue-900 hover:!bg-blue-950 !text-white" />
+                                <div class="absolute inset-0 hidden lg:flex items-center justify-center gap-1 lg:gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <UButton @click.stop="addCard(card)" size="xs" variant="solid" icon="i-heroicons-plus-20-solid" class="shadow-lg !bg-blue-900 hover:!bg-blue-950 !text-white lg:!w-10 lg:!h-10" />
+                                    <UButton @click.stop="removeCard(card)" size="xs" variant="solid" icon="i-heroicons-minus-20-solid" class="shadow-lg !bg-blue-900 hover:!bg-blue-950 !text-white lg:!w-10 lg:!h-10" />
+                                    <UButton @click.stop="openCardModal(card)" size="xs" variant="solid" icon="i-heroicons-eye-20-solid" class="shadow-lg !bg-blue-900 hover:!bg-blue-950 !text-white lg:!w-10 lg:!h-10" />
                                 </div>
                             </div>
                         </div>
@@ -49,44 +50,44 @@
             </div>
 
             <!-- Right Column: Deck List -->
-            <div class="lg:col-span-2">
+            <div class="lg:col-span-2 order-1 lg:order-2">
                 <div @drop="handleDrop" @dragover.prevent="handleDragOver" @dragleave.prevent="handleDragLeave"
-                    class="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg transition-colors min-h-[676px]"
+                    class="bg-gray-100 dark:bg-gray-800 p-2 lg:p-4 rounded-lg transition-colors min-h-[400px] lg:min-h-[676px]"
                     :class="{ 'bg-primary-100 dark:bg-primary-900 ring-2 ring-primary-500': isDragOver }">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-2xl font-bold">Your Deck ({{ totalCount }} / 20)</h2>
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
+                        <h2 class="text-xl lg:text-2xl font-bold">Your Deck ({{ totalCount }} / 20)</h2>
                         <UButton v-if="totalCount > 0" @click="confirmClearDeck" color="red" variant="soft"
-                            icon="i-heroicons-trash">
+                            icon="i-heroicons-trash" size="sm">
                             Clear Deck
                         </UButton>
                     </div>
 
                     <div class="space-y-6">
                         <div v-if="totalCount === 0"
-                            class="flex flex-col items-center justify-center h-full min-h-[550px] text-center border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8">
+                            class="flex flex-col items-center justify-center h-full min-h-[300px] lg:min-h-[550px] text-center border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-4 lg:p-8">
                             <UIcon name="i-heroicons-document-plus"
-                                class="text-5xl text-gray-400 dark:text-gray-500 mb-4" />
-                            <p class="text-lg font-semibold text-gray-600 dark:text-gray-300">Drop Cards Here</p>
-                            <p class="text-sm text-gray-500 dark:text-gray-400">Drag or right-click cards from the left
+                                class="text-4xl lg:text-5xl text-gray-400 dark:text-gray-500 mb-4" />
+                            <p class="text-base lg:text-lg font-semibold text-gray-600 dark:text-gray-300">Drop Cards Here</p>
+                            <p class="text-xs lg:text-sm text-gray-500 dark:text-gray-400">Drag or tap cards from the left
                                 panel to add them.</p>
                         </div>
 
                         <div v-else>
                             <!-- Unified Deck Grid -->
-                            <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
+                            <div class="grid grid-cols-4 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-5 gap-2 lg:gap-4">
                                 <div v-for="item in deck" :key="item.card._id" class="relative group">
                                     <NuxtImg :src="url + item.card.image" :alt="item.card.name"
                                         class="rounded-lg shadow-md w-full select-none group-hover:opacity-30 transition-opacity"
                                         draggable="false"
                                         onerror="this.onerror=null;this.src='https://placehold.co/240x336/EFEFEF/333333?text=No+Image';" />
                                     <div
-                                        class="absolute -top-2 -right-2 bg-primary-500 text-white rounded-full h-6 w-6 flex items-center justify-center text-sm font-bold shadow-lg pointer-events-none">
+                                        class="absolute -top-2 -right-2 bg-primary-500 text-white rounded-full h-5 w-5 lg:h-6 lg:w-6 flex items-center justify-center text-xs lg:text-sm font-bold shadow-lg pointer-events-none">
                                         {{ item.quantity }}
                                     </div>
-                                    <div class="absolute inset-0 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <UButton @click.stop="addCard(item.card)" size="md" variant="solid" icon="i-heroicons-plus-20-solid" class="shadow-lg !bg-blue-900 hover:!bg-blue-950 !text-white" />
-                                        <UButton @click.stop="removeCard(item.card)" size="md" variant="solid" icon="i-heroicons-minus-20-solid" class="shadow-lg !bg-blue-900 hover:!bg-blue-950 !text-white" />
-                                        <UButton @click.stop="openCardModal(item.card)" size="md" variant="solid" icon="i-heroicons-eye-20-solid" class="shadow-lg !bg-blue-900 hover:!bg-blue-950 !text-white" />
+                                    <div class="absolute inset-0 flex items-center justify-center gap-1 lg:gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <UButton @click.stop="addCard(item.card)" size="xs" variant="solid" icon="i-heroicons-plus-20-solid" class="shadow-lg !bg-blue-900 hover:!bg-blue-950 !text-white lg:!w-10 lg:!h-10" />
+                                        <UButton @click.stop="removeCard(item.card)" size="xs" variant="solid" icon="i-heroicons-minus-20-solid" class="shadow-lg !bg-blue-900 hover:!bg-blue-950 !text-white lg:!w-10 lg:!h-10" />
+                                        <UButton @click.stop="openCardModal(item.card)" size="xs" variant="solid" icon="i-heroicons-eye-20-solid" class="shadow-lg !bg-blue-900 hover:!bg-blue-950 !text-white lg:!w-10 lg:!h-10" />
                                     </div>
                                 </div>
                             </div>
